@@ -8,7 +8,7 @@ RUN mkdir /app
 WORKDIR /app
 ADD sync.py /app/
 ADD requirements.txt /app/
-RUN python3 -m pip install --break-system-packages -r /app/requirements.txt 
+RUN python3 -m pip install -r /app/requirements.txt 
 
 ADD cronjob /etc/cron.d/cronjob
 RUN chmod 0644 /etc/cron.d/cronjob
