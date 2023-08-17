@@ -23,6 +23,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            localhost:5000/${{ secrets.DOCKER_USERNAME }}/syncer_image:latest
-            localhost:5000/${{ secrets.DOCKER_USERNAME }}/syncer_image:${{ github.sha }}
+          tags: none
