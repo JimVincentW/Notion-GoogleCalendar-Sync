@@ -5,12 +5,12 @@ from gcsa.event import Event
 from dateutil.parser import parse
 from datetime import timedelta, datetime
 
-print("hi")
 
-os.environ["NOTION_TOKEN"] = "<NOTION_TOKEN>"
+
+
 notion = Client(auth=os.environ["NOTION_TOKEN"])
-notion_databas_id = "xxx"
-calendar = GoogleCalendar('your_email@gmail.com')
+notion_database_id = os.environ["NOTION_DATABASE_ID"]
+calendar = GoogleCalendar(os.environ["GMAIL_ADDRESS"])
 
 # Time range for events to sync
 start_time = datetime.combine(datetime.today().date(), datetime.min.time())
@@ -22,7 +22,7 @@ gc_events = calendar.get_events(time_min=start_time, time_max=end_time)
 # Fetch events from the Notion database
 response = notion.databases.query(
     **{
-        "database_id": notion_databas_id,
+        "database_id": notion_database_id,
         "filter": {
             "property": "Date",
             "date": {
@@ -42,7 +42,7 @@ gc_events_set = {(e.start.isoformat(), e.summary) for e in gc_events}
 for event in gc_events:
     if (event.start.isoformat(), event.summary) not in notion_events_set:
         notion.pages.create(
-            parent={"database_id": notion_databas_id},
+            parent={"database_id": notion_database_id},
             properties={
                 "Name": {"title": [{"text": {"content": event.summary}}]},
                 "Date": {"date": {"start": event.start.isoformat(), "end": event.end.isoformat()}},
