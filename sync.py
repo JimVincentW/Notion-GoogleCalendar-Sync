@@ -5,6 +5,8 @@ from gcsa.event import Event
 from dateutil.parser import parse
 from datetime import timedelta, datetime
 
+print("hi")
+
 os.environ["NOTION_TOKEN"] = "<NOTION_TOKEN>"
 notion = Client(auth=os.environ["NOTION_TOKEN"])
 notion_databas_id = "xxx"
