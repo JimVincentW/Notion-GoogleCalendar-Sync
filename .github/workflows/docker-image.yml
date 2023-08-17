@@ -22,5 +22,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/syncer_image:latest
