@@ -19,4 +19,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: docker.io/${{ secrets.DOCKER_USERNAME_J1 }}/syncer_image:latest
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/Notion-GoogleCalendar-Syncer:latest
