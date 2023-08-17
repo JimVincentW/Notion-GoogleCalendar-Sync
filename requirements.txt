@@ -1,0 +1,3 @@
+gcsa
+notion-client
+python-dateutil
