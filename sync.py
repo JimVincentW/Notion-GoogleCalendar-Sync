@@ -89,7 +89,7 @@ for event in notion_events:
 
         # Check if the event is not from yesterday
         if date.date() != yesterday:
-            if (date.date().isoformat(), title) not in gc_events_set:
+            if (date.date(), title) not in gc_events_set:
                 print(f"Adding {title} from Notion to Google Calendar.")
                 gc_event = Event(
                     title,
