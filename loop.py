@@ -7,7 +7,7 @@ def main():
             # Run your script. Replace 'your_script.py' with your script's path.
             subprocess.run(['python', 'sync.py'], check=True)
             
-            # Wait for 10 minutes (600 seconds)
+            # Wait for 50 minutes (300 seconds)
             time.sleep(300)
             
         except subprocess.CalledProcessError as e:

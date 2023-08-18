@@ -29,10 +29,15 @@ pip install -r requirements.txt
 
 3. Set up the Google Calendar API following the `gcsa` package [instructions](https://gcsa.readthedocs.io/en/latest/quickstart.html#authorization).
 
+! you may be promped once to authorize the app to access your google calendar. If so, follow the instructions in the terminal. If you are running the script on a server copy the token.pickle file to the server to /.credentials/ where the credentials.py file should also be. !
+
 4. Add your Notion API token and other configuration details to the environment variables.
+
+```bash
 export NOTION_TOKEN=xxx
 export NOTION_DATABASE_ID=xxx
 export GMAIL_ADDRESS=xxx
+``````
 
 
 ### Running the Script for one time sync
