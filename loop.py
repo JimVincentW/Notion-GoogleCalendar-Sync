@@ -6,7 +6,7 @@ def main():
         try:
             # Run your script. Replace 'your_script.py' with your script's path.
             subprocess.run(['python', 'sync.py'], check=True)
-            
+            print("Synced!")
             # Wait for 50 minutes (300 seconds)
             time.sleep(300)
             
