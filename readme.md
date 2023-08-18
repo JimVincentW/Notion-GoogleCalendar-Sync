@@ -29,23 +29,19 @@ pip install -r requirements.txt
 
 3. Set up the Google Calendar API following the `gcsa` package [instructions](https://gcsa.readthedocs.io/en/latest/quickstart.html#authorization).
 
-4. Add your Notion API token and other configuration details directly in the script or use environment variables.
+4. Add your Notion API token and other configuration details to the environment variables.
+export NOTION_TOKEN=xxx
+export NOTION_DATABASE_ID=xxx
+export GMAIL_ADDRESS=xxx
 
-### Running the Script
 
+### Running the Script for one time sync
 ```bash
 python sync.py
 ``````
 
-Contribution
-Feel free to fork this repository, make changes, and submit pull requests. For major changes, please open an issue first to discuss the proposed change.
 
-License
-This project is open-source and available under the MIT License.
-
-typescript
-Copy code
-
-You can create these two files in your project directory, fill in `<your-repository-link>` with your actual GitHub repository link, and `<repository-directory>` with the name of your project directory. 
-
-This will provide a good starting point for your GitHub repository. Make sure to adjust the information as needed to better fit the specifics of your project or any additional details you'd like to include.
+### Running the Script for looping sync
+```bash
+python loop.py
+``````
