@@ -36,7 +36,15 @@ notion_events = response['results']
 print(f"Number of events fetched from Notion: {len(notion_events)}")
 
 # Construct sets for events
-gc_events_set = {(e.start.date().isoformat(), e.summary) for e in gc_events_list if e.start and e.summary}
+gc_events_set = set()
+for e in gc_events_list:
+    if e.start and e.summary:
+        if isinstance(e.start, datetime):
+            gc_events_set.add((e.start.date().isoformat(), e.summary))
+        else:
+            # This is an all-day event in Google Calendar
+            gc_events_set.add((e.start.isoformat(), e.summary))
+
 
 notion_events_set = set()
 for e in notion_events:
@@ -85,16 +93,23 @@ for event in gc_events_list:
 for event in notion_events:
     try:
         title = event['properties']['Name']['title'][0]['plain_text']
-        date = parse(event['properties']['Date']['date']['start'])
+        date_str = event['properties']['Date']['date']['start']
+        date = parse(date_str)
 
         # Check if the event is not from yesterday
         if date.date() != yesterday:
-            if (date.date(), title) not in gc_events_set:
+            # Check if the Notion event has a time or not
+            if "T" in date_str:  # the event has a specific time
+                key = (date.date().isoformat(), title)
+            else:  # all-day event
+                key = (date_str, title)
+
+            if key not in gc_events_set:
                 print(f"Adding {title} from Notion to Google Calendar.")
                 gc_event = Event(
                     title,
                     start=date,
-                    end=(date + timedelta(hours=1))  # assuming the event is 1 hour
+                    end=(date + timedelta(hours=1)) if "T" in date_str else date
                 )
                 calendar.add_event(gc_event)
             else:
