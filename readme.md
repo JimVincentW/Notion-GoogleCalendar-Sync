@@ -8,6 +8,8 @@ This script provides two-way synchronization:
 1. It adds events from Google Calendar to a Notion database that aren't already present in the database.
 2. It adds events from the Notion database to Google Calendar if they aren't already present in the calendar.
 
+(3. Natively, events created in Notion by clicking into the Calender have no time set, when calling the api they will be set to 00:00:00. This script will set the time to 12:00:00 before adding the event to the google calendar.)
+
 ## Setup
 
 ### Prerequisites
