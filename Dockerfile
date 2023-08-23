@@ -11,12 +11,17 @@ RUN apt-get install -y cron
 RUN mkdir /app
 RUN mkdir /app/.credentials
 WORKDIR /app
+COPY .env /.env
 ADD sync.py /app/
 ADD requirements.txt /app/
 RUN python3 -m pip install -r /app/requirements.txt 
+ADD runner.sh /app/
+RUN chmod +x /app/runner.sh
 
 ADD cronjob /etc/cron.d/cronjob
 RUN chmod 0644 /etc/cron.d/cronjob
+RUN chmod +x /app/sync.py
+RUN crontab /etc/cron.d/cronjob
 RUN touch /var/log/cron.log
 
 ENTRYPOINT [ "cron", "-f" ]
