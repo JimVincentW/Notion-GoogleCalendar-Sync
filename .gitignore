@@ -1,0 +1,4 @@
+# ignore docker-compose.yml environment variables:
+
+
+docker-compose.yml
