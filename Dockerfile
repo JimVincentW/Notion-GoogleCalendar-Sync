@@ -11,7 +11,6 @@ RUN apt-get install -y cron
 RUN mkdir /app
 RUN mkdir /app/.credentials
 WORKDIR /app
-COPY syncer/.env /app/.env
 ADD sync.py /app/
 ADD requirements.txt /app/
 RUN python3 -m pip install -r /app/requirements.txt 
