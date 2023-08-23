@@ -1,1 +1,1 @@
-* * * * * /app/runner.sh >> /var/log/cron.log 2>&1
+* * * * * /app/sync.py >> /var/log/cron.log 2>&1
