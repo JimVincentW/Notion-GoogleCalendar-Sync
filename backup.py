@@ -31,13 +31,12 @@ def fetch_notion_events(notion, database_id, start_time, end_time):
         filter={
             "property": "Date",
             "date": {
-                "on_or_after": start_time.isoformat(),
-                "on_or_before": end_time.isoformat()
+                "after": start_time.isoformat(),
+                "before": end_time.isoformat()
             },
         }
     )
     return response['results']
-
 
 
 def update_time_to_noon(notion, notion_event):
@@ -68,63 +67,10 @@ def update_time_to_noon(notion, notion_event):
     except Exception as e:
         print(f"Failed to update event with ID {notion_event.get('id', 'UNKNOWN_ID')}. Error: {e}")
 
-def update_notion_event_from_gc(notion, database_id, gc_event):
-    response = notion.databases.query(
-        database_id=database_id,
-        filter={
-            "property": "external_gcal_id",
-            "rich_text": {
-                "equals": gc_event.id
-            }
-        }
-    )
-
-    if response['results']:
-        page_id = response['results'][0]['id']
-        properties = {
-            "Name": {"title": [{"text": {"content": gc_event.summary}}]},
-            "Date": {"date": {"start": gc_event.start.isoformat(), "end": gc_event.end.isoformat()}}
-        }
-        notion.pages.update(page_id=page_id, properties=properties)
-
-
-def update_gc_event_from_notion(calendar, notion_event, gc_event_id):
-    title = notion_event['properties']['Name']['title'][0]['plain_text']
-    date_str = notion_event['properties']['Date']['date']['start']
-    date = parse(date_str)
-    updated_event = Event(title, start=date, end=date + timedelta(hours=1), event_id=gc_event_id)
-    calendar.update_event(updated_event)
-
-
-def delete_notion_event_by_gcal_id(notion, database_id, gcal_id):
-    print(gcal_id)
-    response = response = notion.databases.query(
-        database_id=database_id,
-        filter={
-            "property": "external_gcal_id",
-            "rich_text": {
-                "equals": gcal_id
-            }
-        }
-    )
-    if response['results']:
-        notion.pages.delete(response['results'][0]['id'])
-
-def delete_gc_event_by_id(calendar, event_id):
-    calendar.delete_event_by_id(event_id)
-
-def add_event_to_notion(notion, database_id, gc_event):
-    properties = {
-        "Name": {"title": [{"text": {"content": gc_event.summary}}]},
-        "Date": {"date": {"start": gc_event.start.isoformat(), "end": gc_event.end.isoformat()}},
-        "Art": {"multi_select": [{"name": "Termine/ To-Do"}]},
-        "external_gcal_id": {"rich_text": [{"text": {"content": gc_event.id}}]}
-    }
-    notion.pages.create(parent={"database_id": database_id}, properties=properties)
 
 def update_notion_events_to_noon(notion, notion_events):
     for event in notion_events:
-        date_start = event.get('properties', {}).get('Date', {}).get('date', {}).get('start', None)
+        date_start = event['properties']['Date']['date']['start']
         if "T00:00:00" in date_start or "T" not in date_start:
             update_time_to_noon(notion, event)
 
@@ -133,14 +79,15 @@ def has_matching_summary(event, target_summary):
     titles = event['properties'].get('Name', {}).get('title', [])
     return titles and titles[0]['plain_text'] == target_summary
 
-def sync_from_gc_to_notion(notion, database_id, gc_events_list, notion_events):
+
+def sync_from_gc_to_notion(notion, database_id, gc_events_list):
     gc_to_notion_skipped_count = 0
     gc_to_notion_added_count = 0
     added_events_details = []
 
-    for gc_event in gc_events_list:
-        event_date = gc_event.start.date().isoformat()
-        event_summary = gc_event.summary
+    for event in gc_events_list:
+        event_date = event.start.date().isoformat()
+        event_summary = event.summary
 
         response = notion.databases.query(
             database_id=database_id,
@@ -154,49 +101,21 @@ def sync_from_gc_to_notion(notion, database_id, gc_events_list, notion_events):
         )
         notion_same_day_events = response['results']
 
-        matching_notion_event = next((e for e in notion_same_day_events if has_matching_summary(e, event_summary)), None)
-        
-        if matching_notion_event:
-            gc_to_notion_skipped_count += 1
-            if matching_notion_event['properties']['Date']['date']['start'] != gc_event.start.isoformat():
-                # Detected an edit in Google Calendar
-                update_notion_event_from_gc(notion, database_id, gc_event)
-        else:
-            # Add the event to Notion
-            add_event_to_notion(notion, database_id, gc_event)
+        if not any(has_matching_summary(event, event_summary) for event in notion_same_day_events):
             gc_to_notion_added_count += 1
-            added_events_details.append(f"Added {event_summary} from Google Calendar to Notion")
-
-    # To handle deletions:
-    for notion_event in notion_events:
-        external_gcal_id_property = notion_event['properties'].get('external_gcal_id', None)
-        if external_gcal_id_property and 'rich_text' in external_gcal_id_property and external_gcal_id_property['rich_text']:
-            gcal_id = external_gcal_id_property['rich_text'][0]['text']['content']
-            
-            # Now you can use gcal_id in your API call
-            response = notion.databases.query(
-                database_id=database_id,
-                filter={
-                    "property": "external_gcal_id",
-                    "rich_text": {
-                        "equals": gcal_id
-                    }
+            notion.pages.create(
+                parent={"database_id": database_id},
+                properties={
+                    "Name": {"title": [{"text": {"content": event.summary}}]},
+                    "Date": {"date": {"start": event.start.isoformat(), "end": event.end.isoformat()}},
+                    "Art": {"multi_select": [{"name": "Termine/ To-Do"}]}
                 }
             )
-            
-            if response['results']:
-                page_id = response['results'][0]['id']
-                # Update the checkbox property
-                notion.pages.update(page_id, properties={"Checkbox": True})
-                print(f"Checked checkbox for event with external GCal ID {gcal_id}, named {notion_event['properties']['Name']['title'][0]['plain_text']}")
-            else:
-                print(f"No event with external GCal ID {gcal_id} found.")
+            added_events_details.append(f"Added {event_summary} from Google Calendar to Notion")
         else:
-            print("No 'external_gcal_id' property found in Notion event.")
-            
-    # Rest of your code
-    return gc_to_notion_added_count, gc_to_notion_skipped_count, added_events_details
+            gc_to_notion_skipped_count += 1
 
+    return gc_to_notion_added_count, gc_to_notion_skipped_count, added_events_details
 
 
 def sync_from_notion_to_gc(calendar, notion_events, gc_events_set):
@@ -256,7 +175,7 @@ def main():
 
     update_notion_events_to_noon(notion, notion_events)
 
-    gc_to_notion_added_count, gc_to_notion_skipped_count, gc_added_events = sync_from_gc_to_notion(notion, notion_database_id, gc_events_list, notion_events)
+    gc_to_notion_added_count, gc_to_notion_skipped_count, gc_added_events = sync_from_gc_to_notion(notion, notion_database_id, gc_events_list)
     notion_to_gc_added_count, notion_to_gc_skipped_count, notion_added_events = sync_from_notion_to_gc(calendar, notion_events, gc_events_set)
 
     print(f"{gc_to_notion_skipped_count} Google Calendar events skipped as already existing in Notion.")
