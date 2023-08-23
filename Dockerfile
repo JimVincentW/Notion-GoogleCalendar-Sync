@@ -9,7 +9,7 @@ RUN apt-get install -y python3 python3-pip
 RUN apt-get install -y cron
 
 RUN mkdir /app
-run mkdir /app/.credentials
+RUN mkdir /app/.credentials
 WORKDIR /app
 ADD sync.py /app/
 ADD requirements.txt /app/
