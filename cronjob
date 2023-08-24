@@ -1,1 +1,1 @@
-* * * * * root export NOTION_TOKEN='secret_dBMfuT28DpqZNV56NrFFY4N0VvVCHNtHrmelLwkZkvj' && export NOTION_DATABASE_ID='2f0c689557c34340b85379ab5fc363d8' && export GMAIL_ADDRESS='jimvwagner@gmail.com' && /app/runner.sh >> /var/log/cron.log 2>&1
+*/5 * * * * root export NOTION_TOKEN='secret_dBMfuT28DpqZNV56NrFFY4N0VvVCHNtHrmelLwkZkvj' && export NOTION_DATABASE_ID='2f0c689557c34340b85379ab5fc363d8' && export GMAIL_ADDRESS='jimvwagner@gmail.com' && /app/runner.sh >> /var/log/cron.log 2>&1
