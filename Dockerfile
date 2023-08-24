@@ -22,5 +22,7 @@ RUN chmod 0644 /etc/cron.d/cronjob
 RUN chmod +x /app/sync.py
 RUN crontab /etc/cron.d/cronjob
 RUN touch /var/log/cron.log
+RUN chmod +x /app/runner.sh
+
 
 ENTRYPOINT [ "cron", "-f" ]

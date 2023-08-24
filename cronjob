@@ -1,1 +1,1 @@
-* * * * * /bin/bash -c 'source /app/config/syncer.env && /app/runner.sh' >> /var/log/cron.log 2>&1
+* * * * * /bin/bash /app/runner.sh >> /var/log/cron.log 2>&1
