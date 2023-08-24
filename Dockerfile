@@ -27,4 +27,4 @@ RUN touch /var/log/cron.log
 RUN chmod +x /app/runner.sh
 
 
-ENTRYPOINT [ "cron", "-f" ]
+CMD [ "cron", "-f" ]
