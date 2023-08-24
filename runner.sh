@@ -1,2 +1,7 @@
+#!/bin/bash
+
+# source the env variables
 source /.env
-/usr/bin/python3 /app/sync.py
+
+# Run your python script
+python3 /app/sync.py
