@@ -1,1 +1,3 @@
+SHELL=/bin/bash
+BASH_ENV=/root/project_env.sh
 * * * * * /bin/bash /app/runner.sh >> /var/log/cron.log 2>&1

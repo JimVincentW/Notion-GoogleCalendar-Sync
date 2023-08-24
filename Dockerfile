@@ -19,6 +19,8 @@ RUN chmod +x /app/runner.sh
 
 ADD cronjob /etc/cron.d/cronjob
 RUN chmod 0644 /etc/cron.d/cronjob
+RUN touch /var/log/cron.log
+RUN printenv | sed 's/^\(.*\)$/export \1/g' > /root/project_env.sh
 RUN chmod +x /app/sync.py
 RUN crontab /etc/cron.d/cronjob
 RUN touch /var/log/cron.log

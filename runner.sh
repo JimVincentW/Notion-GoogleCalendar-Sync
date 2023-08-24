@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# source the env variables
+# Use absolute path to the env file
 source /app/config/syncer.env
 
-# Run your python script
+# Run your Python script
 python3 /app/sync.py
