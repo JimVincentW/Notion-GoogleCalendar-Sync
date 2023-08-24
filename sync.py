@@ -133,7 +133,7 @@ def sync_from_notion_to_gc(calendar, notion_events, gc_events_set):
             date_str = event['properties']['Date']['date']['start']
             date = parse(date_str)
 
-            if date.date() != yesterday:
+            if date.date() >= datetime.today().date():
                 if "T" not in date_str:
                     date_naive = datetime.strptime(date_str, '%Y-%m-%d') + timedelta(hours=12)
                     date = berlin.localize(date_naive)
