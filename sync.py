@@ -173,10 +173,13 @@ def main():
             else:
                 gc_events_set.add((e.start.isoformat(), e.summary))
 
-    update_notion_events_to_noon(notion, notion_events)
+    update_notion_events_to_noon(notion, notion_events) 
 
     gc_to_notion_added_count, gc_to_notion_skipped_count, gc_added_events = sync_from_gc_to_notion(notion, notion_database_id, gc_events_list)
     notion_to_gc_added_count, notion_to_gc_skipped_count, notion_added_events = sync_from_notion_to_gc(calendar, notion_events, gc_events_set)
+
+    # Print time of sync with sync id (random number)
+    print(f"Synced at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with sync id {datetime.now().timestamp()}")
 
     print(f"{gc_to_notion_skipped_count} Google Calendar events skipped as already existing in Notion.")
     print(f"{notion_to_gc_skipped_count} Notion events skipped as already existing in Google Calendar.")
